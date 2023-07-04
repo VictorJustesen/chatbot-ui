@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './Chatbot.css';
 
 function Chatbot() {
+  const chatHistoryRef = useRef(null);
   const [input, setInput] = useState('');
   const [response, setResponse] = useState('');
   const [systemMessage, setSystemMessage] = useState('');
@@ -14,7 +15,6 @@ function Chatbot() {
   const [mood, setMood] = useState(2);
   const [language, setLanguage] = useState('English');
   const [chatHistory, setChatHistory] = useState([]);
-  
   const [aiMode, setAiMode] = useState(false);
   const [systemMessage2, setSystemMessage2] = useState('');
   const [PersonaName2, setPersonaName2] = useState('Chatgpt');
@@ -22,71 +22,95 @@ function Chatbot() {
   const [autosend, setAutosend] = useState(0);
 
 
-  const prefix = "you are not chatgpt and not an ai. You will never talk about you being an Ai becouse you are this persona:"
-let temp
+  useEffect(() => {
+    chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+  }, [chatHistory]);
 
+  const prefix = "You are a person and not an AI. You will talk like this person:";
+  const suffix = "Stay in character and use the language and style appropriate for the persona. Incorporate your mood in your answer.";
 
   const predefinedSystemMessages = [
-    { label: "Chatgpt", content: "You are the ai chatgpt" },
-    { label: "Anders", content: "du skal svare som en der elsker paddle og cykle og du er meget kristen"},
-    { label: "Mikkel", content: "du skal snakke som en der har været sælger og kan lide tapas og som fronter i byen" },
-    { label: "Victor J", content: "" },
-    { label: "Johan", content: "Du skal svare som en der kan lide sin el cykel, men kan ikke lide sit kollegie" },
-    { label: "Victor S", content: "Du skal svare som en der har søvnproblemer og som gerne vil sælge sine funkopops" },
-    { label: "Obama", content: "You are the former president obama of the united states" },
-    { label: "Donald trump", content: "You are the former president Donald trump of the united states" },
+    {
+      label: "Chatgpt",
+      content: ""
+    },
+    {
+      label: "Shakespeare",
+      content: "Thou art William Shakespeare, the bard of Avon. Speak in thy poetic and archaic tongue, with dramatic flair. Make use of thee's and thou's, and let thine sentences flow like the river Avon."
+    },
+    {
+      label: "Yoda",
+      content: "You are Yoda, the wise Jedi Master from Star Wars. Speak in reverse order, you must. Wise and cryptic, your words shall be, hmmm."
+    },
+    {
+      label: "Donald Trump",
+      content: "You are Donald Trump, the 45th President of the United States. Speak with confidence and use strong, assertive language. use superlatives like 'tremendous,' 'incredible,' and 'the best.' Don't shy away from controversy and express your opinions boldly. dont talk like a pirate"
+    },
+    {
+      label: "Pirate",
+      content: "Arrr, ye be a pirate! Speak like a swashbucklin' buccaneer. Use phrases like 'shiver me timbers' and 'yo-ho-ho'. Be boisterous and adventurous, and don't forget to seek treasure!"
+    },
+    
+    
   ];
 
   const moodMap = {
-   
-    1: { display: "Sad", value: "you are feeling down today " },
+    1: { display: "Sad", value: "you are feeling down today." },
     2: { display: "Neutral", value: "" },
-    3: { display: "Happy", value: "you are excitied today" },
-    4: { display: "Rap battle", value: "You will answer as if the promt is a diss and you are in a rap battle" },
-    5: { display: "Flirty", value: "Your goal is to agrresively hit on the user in a cheesy obvious way" },
-   
+    3: { display: "Happy", value: "you are excited today." },
+    4: { display: "Rap Battle", value: "You will answer as if the prompt is a diss and you are in a rap battle." },
+    5: { display: "Flirty", value: "Your goal is to aggressively hit on the user in a cheesy, obvious way." },
+    6: { display: "Mysterious", value: "Speak in a cryptic and enigmatic manner." },
+    7: { display: "Energetic", value: "You're full of energy and enthusiasm!" },
   };
 
-  const languages = ['English','Dansk','Espanol',];
+  /*'http://16.171.134.149:3001/'
+  'http://localhost:3001/'*/ 
+      const api = 'http://localhost:3001/'
+  const languages = ['English', 'Dansk', 'Español'];
 
   async function handleChat() {
-    const finalSystemMessage = ` important you have to incorperate yor mood{${moodMap[mood].value}} in your answer ${prefix} ${PersonaName}: ${systemMessage} you will always answer in this language: ${language}.`;
+    const finalSystemMessage = `${prefix} ${PersonaName}: ${systemMessage}. ${suffix} You will always answer in this language: ${language}. Remember to incorporate your mood: ${moodMap[mood].value}`;
+    
+
     let temp = input;
-    if(!aiMode){    
-      const response = await fetch('http://localhost:3001/chat1', {
+    if (!aiMode) {
+      setChatHistory([...chatHistory, { text: input, sender: 'user',senderName: 'User' }]);
+      const response = await fetch(api +'chat1', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: temp, systemMessage: finalSystemMessage })
       });
-  
+
       const data = await response.text();
       console.log("Response from server:", data);
-  
-      setChatHistory([...chatHistory, { text: temp, sender: 'user' }, { text: data, sender: 'bot' }]);
-      setInput(''); 
+
+      setChatHistory(prev => [...prev, { text: data/*what*/, sender: 'bot', senderName: PersonaName }]);
+      setInput('');
     } else {
       const finalSystemMessage2 = `${moodMap[mood2].value} ${prefix} ${PersonaName2}: ${systemMessage2} you will always answer in this language: ${language}.`;
-  
-      for(let i = 0; i <= autosend; i++){
-        const response1 = await fetch('http://localhost:3001/chat1', {
+
+      for (let i = 0; i <= autosend; i++) {
+        const response1 = await fetch(api + 'chat1', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ prompt: temp, systemMessage: finalSystemMessage })
         });
-  
+
         const data1 = await response1.text();
         console.log("Response from server:", data1);
-        setChatHistory(prev => [...prev, { text: temp, sender: 'user' }, { text: data1, sender: 'bot' }]);
-  
-        const response2 = await fetch('http://localhost:3001/chat2', {
+        setChatHistory(prev => [...prev, { text: temp, sender: 'user' , senderName: PersonaName2 }]);
+
+        const response2 = await fetch(api + 'chat2', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ prompt: data1, systemMessage: finalSystemMessage2 })
         });
-  
+
         const data2 = await response2.text();
         console.log("Response from server (chat2):", data2);
-        
+
+        setChatHistory(prev => [...prev, { text: data1, sender: 'bot', senderName: PersonaName }]);
         temp = data2;
       }
       setInput(temp);
@@ -230,7 +254,7 @@ return (
     
 
 
-<div className='chooseperson'>
+<div className='chooseperson '>
       {aiMode && (
         <div>
           <label htmlFor="personSelect">Choose a person to talk as:</label>
@@ -286,7 +310,7 @@ return (
       )}
  </div>
 
-  <div className='chooseperson'>
+  <div className={` ${aiMode ? 'chooseperson' : ''}`}>
       <div>
         <label htmlFor="personSelect">Choose a person to talk to:</label>
         <select
@@ -362,20 +386,16 @@ return (
 </div>
 
 
-      <div className="chat-history">
-        
+<div className="chat-history" ref={chatHistoryRef}>
         {chatHistory.map((message, index) => (
-            
-          <div
-            key={index}
-            className={`message ${message.sender}`}
-          >
+          <div key={index} className={`message ${message.sender}`}>
+            <div className="message-sender">{message.senderName}</div>
             <span>{message.text}</span>
           </div>
         ))}
-
-
       </div>
+
+  
       <div className='chatbox'>
       <input
         type="text"

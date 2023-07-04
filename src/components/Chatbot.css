@@ -1,14 +1,13 @@
 .chatbot-container {
     width: 100%;
+    height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Align items to the start (top) of the container */
+    justify-content: flex-start;
     align-items: center;
-    
     padding-bottom: 40px;
     margin: 0;
 }
-
 
 .chatbot-container input[type="text"],
 .chatbot-container select,
@@ -21,7 +20,9 @@
     border-radius: 4px;
     box-sizing: border-box;
     background-color: var(--off);
-   
+    height: 45px;
+    -webkit-appearance: none;
+    position: relative;
 }
 
 .chatbot-container button {
@@ -36,23 +37,31 @@
 }
 
 .chatbot-container button:hover {
-    background-color: #45a049;
+    background-color: #58af92;
 }
-
 
 .message {
     padding: 10px;
     margin-bottom: 10px;
     border-radius: 5px;
     max-width: 80%;
-   
 }
 
 .message.user {
     align-self: flex-start;
     background-color: var(--green);
     margin-left: 10px;
-    /* Ensures that color is set to white */
+    position: relative;
+}
+
+.message.user:after {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 10px;
+    border: 5px solid transparent;
+    border-right-color: var(--green);
+    transform: translateY(-50%);
 }
 
 .message.bot {
@@ -60,25 +69,62 @@
     background-color: var(--off);
     margin-right: 10px;
     width: 100%;
-   /* Ensures that color is set to white */
+    position: relative;
+}
+
+.message.bot:after {
+    content: '';
+    position: absolute;
+    right: -10px;
+    top: 10px;
+    border: 5px solid transparent;
+    border-left-color: var(--off);
+    transform: translateY(-50%);
+}
+
+.message .message-sender {
+    position: absolute;
+    top: -20px;
+    left: 10px;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.message.bot .message-sender {
+    right: 10px;
+    left: auto;
 }
 
 .chat-history {
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-height: 70vh; /* Adjust this value as per your design needs */
-    overflow-y: auto; /* Enables scrolling */
+    overflow-y: auto;
     margin-top: 20px;
-    border: 1px solid #ccc;
-    border-bottom: 0px;
-    border-radius: 4px;
-    padding: 10px;
-    overflow-y: scroll;
     padding-right: 20px;
     padding-left: 20px;
+    flex-grow: 1;
+    max-height:70% ;
 }
 
+.chatbox {
+    background-color: var(--main);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 20px;
+    width: 100vw;
+    max-width: 100%;
+    box-sizing: border-box;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    box-shadow: 0px 0px 10px black;
+    
+}
 
 .chat-history-header {
     display: flex;
@@ -94,7 +140,6 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-   
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -104,112 +149,100 @@
     margin: 10px;
 }
 
-/* Additional styles for the names over the chat history */
-
-
-.choosepersons{
-    
+.choosepersons {
+    margin-top: 20px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
 }
 
-.choosepersons > .chooseperson{
-   padding: 2.5rem;
+.choosepersons > .chooseperson {
+    padding: 2.5rem;
 }
 
 .names {
-    margin-top: -4rem;
     width: 95%;
     display: flex;
     flex-direction: row;
-    justify-content: space-between; /* Adjust this value based on your desired spacing */
-  }
-  
-.aimodebox{
+    justify-content: space-between;
+}
+
+.aimodebox {
     display: flex;
     flex-direction: row;
-  
     align-items: center;
     margin-left: auto;
-   gap: 10px;
-  
-
+    gap: 10px;
 }
 
-
-
-.chatbox{
-    
-    display: flex; 
-    flex-direction:row ;
-    width:95%;
-    justify-content: space-between;
-    gap:10px;
-    padding: 20px;
-    margin-left: 10px;
-    
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    
+.chat-button {
+    flex: 5;
+    padding-left: 2rem;
 }
 
-.chat-button{flex:5;
-padding-left: 2rem;}
-
-.chat-input{flex:50;
-    padding-right: 2rem;}
-
-.langbox{display:flex;
-align-items: center;
-padding-right: auto;
+.chat-input {
+    flex: 50;
+    padding-right: 2rem;
 }
 
-.langlabel{margin-right: 5px;}
+.langbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.langlabel {
+    margin-right: 5px;
+}
 
 .startbox > * {
-    flex: 1 1 0; /* This tells the items to evenly distribute the space */
+    flex: 1 1 0;
     margin-left: 20px;
-    margin-right: 20px; /* This adds margin around each item */
+    margin-right: 20px;
 }
 
-/* Ensure the AI Mode button does not move when pressed */
 .ai-mode-checkbox:focus,
 .ai-mode-checkbox:active {
-    outline: none; /* Remove outline */
-    transform: none; /* Ensure the checkbox does not move */
+    outline: none;
+    transform: none;
 }
 
 .startbox {
     display: flex;
     align-items: center;
-    justify-content: center; /* aligns items horizontally in the center */
+    justify-content: center;
+    flex-wrap: wrap;
     width: 95%;
     gap: 5rem;
-   
 }
 
-.create-person-button{flex:1;}
+.create-person-button {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
-.createpersonbutton{display: flex;
-align-items: center;
-gap: 10px;}
+.createpersonbutton {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
-.help{flex:0;}
-
-
-
+.help {
+    flex: 0;
+}
 
 .tooltip {
     position: relative;
     display: inline-block;
-    cursor: pointer; /* Change mouse cursor to pointer on hover over the icon */
-  }
-  
-  /* Tooltip text */
-  .tooltip .tooltiptext {
+    cursor: pointer;
+}
+
+.tooltip .tooltiptext {
     visibility: hidden;
     width: 120px;
     background-color: #555;
@@ -217,53 +250,79 @@ gap: 10px;}
     text-align: center;
     border-radius: 6px;
     padding: 5px 0;
-  
-    /* Position the tooltip text */
     position: absolute;
     z-index: 1;
-    top: 150%; /* Place the tooltip below the text */
+    top: 150%;
     left: 50%;
-    margin-left: -60px; /* Use half of the width to center the tooltip */
-  
-    /* Fade in tooltip */
+    margin-left: -60px;
     opacity: 0;
     transition: opacity 0.3s;
-  }
-  
-  /* Tooltip arrow */
-  .tooltip .tooltiptext::before {
+}
+
+.tooltip .tooltiptext::before {
     content: "";
     position: absolute;
-    bottom: 100%; /* Place arrow at the top of tooltip */
+    bottom: 100%;
     left: 50%;
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
     border-color: transparent transparent #555 transparent;
-  }
-  
-  /* Add a little space between the icon and the tooltip text */
-  .tooltip .fa-question-circle {
+}
+
+.tooltip .fa-question-circle {
     margin-right: 10px;
-  }
-  
-  /* Show the tooltip text when you mouse over the tooltip container */
-  .tooltip:hover .tooltiptext {
+}
+
+.tooltip:hover .tooltiptext {
     visibility: visible;
     opacity: 1;
-  }
-
-
+}
 
 @media only screen and (max-width: 900px) {
-    
     .startbox {
         flex-direction: column;
         align-items: center;
+        gap: 1rem;
     }
-.create-person-button{
-    
-    width: 65rem;
-    color: blueviolet;
+
+    .choosepersons {
+        display: flex;
+        align-items: center;
+    }
+
+    .choosepersons > .chooseperson {
+        padding: 10px;
+    }
+
+    .names {
+        margin-top: 10px;
+    }
+
+    .create-person-button {
+        width: 65rem;
+        color: blueviolet;
+    }
+
+    .message {
+        margin-top: 10px;
+    }
+
+    .chat-history {
+        min-height: 50vw;
+        max-height: 100vw;
+    }
+
+    .chatbot-container {
+        height: none !important;
+    }
+
+    .chatbox {
+        width: 100%;
+    }
+
+    .chat-input {
+        flex: 12.5;
+        padding-right: 0rem;
+    }
 }
-  }
