@@ -5,6 +5,7 @@ html {
 
 body {
   overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 .popup-mobile {
@@ -20,13 +21,14 @@ body {
 }
 
 .chatbot-container {
+  overflow-y: hidden;
   width: 95%;
-  height: 100vh;
+  max-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  padding-bottom: 40px;
+  
   margin: auto;
   overflow-x: hidden;
 }
@@ -44,8 +46,12 @@ body {
   background-color: var(--off);
   height: 45px;
   -webkit-appearance: none;
+  
   position: relative;
+  font-size: 0.9rem;
+  
 }
+
 
 .chatbot-container button {
   width: 100%;
@@ -56,6 +62,7 @@ body {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 0.9rem;
 }
 
 .chatbot-container button:hover {
@@ -64,10 +71,9 @@ body {
 
 .message {
   padding: 10px;
-  margin-bottom: 10px;
   border-radius: 8px;
   max-width: 80%;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .message.user {
@@ -75,7 +81,7 @@ body {
   background-color: var(--green);
   margin-left: 10px;
   position: relative;
-  margin-bottom: 30px;
+  
 }
 
 .message.user:after {
@@ -92,7 +98,7 @@ body {
   align-self: flex-end;
   background-color: var(--off);
   margin-right: 10px;
-  width: 100%;
+  
   position: relative;
   text-align: start;
 }
@@ -109,20 +115,23 @@ body {
 
 .message .message-sender {
   position: absolute;
-  top: -25px;
+  top: -18px;
   left: 0;
   color: white;
   padding: 2px 5px;
   border-radius: 4px;
   font-size: 12px;
+  white-space: nowrap;
 }
 
 .message.bot .message-sender {
-  right: 10px;
+  right: 0px;
   left: auto;
 }
 
 .chat-history {
+
+  position: relative; 
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -131,10 +140,13 @@ body {
   padding-right: 20px;
   padding-left: 20px;
   flex-grow: 1;
-  max-height: 70%;
+  max-height: 70vh;
   margin-bottom: 105px;
   padding-top: 20px;
+  
 }
+
+
 
 .chatbox {
   background-color: var(--main);
@@ -166,27 +178,43 @@ body {
 .custom-form {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 95%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  margin-top: 75px;
 }
 
 .ai-mode-checkbox {
-  margin: 10px;
+  
+  margin-left: 0 ;
+  
+  width: 50px !important;
+  padding: 0;
+  
 }
 
+.aimodelabel{ flex:2;
+min-width: 60px;
+margin-right: 0;}
+
+
 .choosepersons {
-  margin-top: 20px;
+  margin-top: 75px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  
+  
 }
 
 .choosepersons > .chooseperson {
-  padding: 2.5rem;
+  
+  padding: 2rem;
 }
+
+.away{padding:0;}
 
 .names {
   width: 95%;
@@ -196,13 +224,18 @@ body {
 }
 
 .aimodebox {
+  position: absolute;
+  left:125px;
+  top:5px;
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-left: auto;
   gap: 10px;
+  max-width: 300px;
+  justify-content: flex-start;
+  margin-left: 0; /* Remove the previous margin-left property */
+  min-height: 75px;
 }
-
 
 
 .chat-button {
@@ -215,21 +248,11 @@ body {
   padding-right: 2rem;
 }
 
-.langbox {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding-left: 45px;
-}
 
-.langlabel {
-  margin-right: 5px;
-}
 
 .startbox > * {
   flex: 1 1 0;
-  margin-left: 20px;
-  margin-right: 20px;
+  
 }
 
 .ai-mode-checkbox:focus,
@@ -240,7 +263,7 @@ body {
 
 .startbox {
   display: flex;
-  align-items: center;
+  
   justify-content: center;
   flex-wrap: wrap;
   width: 95%;
@@ -255,14 +278,22 @@ body {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  min-width: 200px;
 }
 
 .createpersonbutton {
+  position: absolute;
+  left:50%;
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-left: 75px;
+  margin-left: -100px;
+  
+  max-width: 400px;
+align-items: baseline;
 }
+
+
 
 .help {
   flex: 0;
@@ -318,12 +349,13 @@ body {
 .help>.tooltiptext{font-size: 14px;}
 
 
-@media only screen and (max-width: 900px) {
+@media only screen and (max-width: 1100px) {
   .startbox {
     flex-direction: column;
     align-items: center;
     gap: 1rem;
   }
+
 
   .langbox {
     
@@ -358,12 +390,14 @@ body {
   }
 
   .chat-history {
-    margin-bottom: 60px;
+    
+   max-height: 70vh;
+   padding-bottom: 2rem !important;   
+   padding-top: 10px;
+   margin-bottom: 50px;
   }
 
-  .chatbot-container {
-    height: none !important;
-  }
+ 
 
   .chatbox {
     width: 100%;
@@ -379,7 +413,11 @@ body {
     flex-direction: column;
     flex-wrap: wrap;
     padding-right: -25px;
+    position: relative;
+    left:20px;
   }
+.ai-mode-checkbox{margin-left: 5px;}
+  .createpersonbutton{position: relative;  left:-10px;}
 
   .aimodetextbox{display: flex; align-items: center; gap: 5px;}
 
@@ -401,7 +439,7 @@ body {
   }
 
   .mobile-startbox {
-    width: 85%;
+    width: 325px;
     height: auto;
     position: absolute;
     top: 50px;
@@ -455,7 +493,7 @@ body {
 
    .help {
     top: 5px;
-    right: 10px; /* Adjust this value according to your layout */
+    right: 25px; /* Adjust this value according to your layout */
     font-size: 20px;
   }
   

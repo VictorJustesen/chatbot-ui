@@ -16,7 +16,7 @@ body {
   --off: #40414f;
   --offtext: #8C8D9F;
   --text :#D1D5DB;
-  min-height: 100%;
+  max-height: 100vh !important;
   background-color: var(--main);
 
   font-size: 1rem;
@@ -39,6 +39,7 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
 
 
 

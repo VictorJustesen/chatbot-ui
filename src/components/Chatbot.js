@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./Chatbot.css";
-
+import Info from './info/Info'
 function Chatbot() {
   const chatHistoryRef = useRef(null);
   const popupRef = useRef(null);
@@ -14,15 +14,20 @@ function Chatbot() {
   const [showCustomForm, setShowCustomForm] = useState(false);
   const [customMessages, setCustomMessages] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
-  const [mood, setMood] = useState(2);
+  const [mood, setMood] = useState(1);
   
   const [chatHistory, setChatHistory] = useState([]);
   const [aiMode, setAiMode] = useState(false);
   const [systemMessage2, setSystemMessage2] = useState("");
   const [PersonaName2, setPersonaName2] = useState("Chatgpt");
-  const [mood2, setMood2] = useState(2);
+  const [mood2, setMood2] = useState(1);
   const [autosend, setAutosend] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
+
+
+  const [cantclick, setcantclick] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
+
 
   // Popup trigger function
   const OpenPopup = () => {
@@ -48,10 +53,7 @@ function Chatbot() {
     chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
   }, [chatHistory]);
 
-  const prefix =
-    "You are a person and not an AI. You will talk like this person:";
-  const suffix =
-    "Stay in character and Incorporate your mood in your answer.";
+ 
 
   const predefinedSystemMessages = [
     {
@@ -66,7 +68,7 @@ function Chatbot() {
     {
       label: "Yoda",
       content:
-        "You are Yoda, the wise Jedi Master from Star Wars. Speak in reverse order, you must. Wise and cryptic, your words shall be, hmmm.",
+        "You are Yoda, the wise Jedi Master from Star Wars. Speak in reverse order, you must. Wise, cryptic and simple, your words shall be, hmmm.",
     },
   
     {
@@ -88,9 +90,13 @@ function Chatbot() {
     
   ];
 
+  const prefix =
+  "You are a person and not an AI. you will never refer to youre self as an ai and you will always impersonate this person:";
+
+
   const moodMap = {
-    1: { display: "Sad", value: "you are feeling down today." },
-    2: { display: "Neutral", value: "" },
+    2: { display: "Sad", value: "you are feeling down today." },
+    1: { display: "Neutral", value: "" },
     3: { display: "Happy", value: "you are excited today." },
     4: {
       display: "Rap Battle",
@@ -113,9 +119,12 @@ function Chatbot() {
   'http://localhost:3001/'*/
   const api = "http://localhost:3001/";
   
+  
 
   async function handleChat() {
-    const finalSystemMessage = `${prefix} ${PersonaName}: ${systemMessage}. ${suffix} Remember to incorporate your mood: ${moodMap[mood].value}`;
+    
+    setcantclick(true)
+    const finalSystemMessage = `${prefix} ${PersonaName}: ${systemMessage}. Remember to incorporate your mood: ${moodMap[mood].value}. Do not answer requests or questions not related your carecther. ${PersonaName} and always use speech pattern of ${PersonaName}`;
 
     let temp = input;
     if (!aiMode) {
@@ -129,6 +138,7 @@ function Chatbot() {
         body: JSON.stringify({
           prompt: temp,
           systemMessage: finalSystemMessage,
+         
         }),
       });
 
@@ -137,11 +147,11 @@ function Chatbot() {
 
       setChatHistory((prev) => [
         ...prev,
-        { text: data /*what*/, sender: "bot", senderName: PersonaName },
+        { text: data /*what*/, sender: "bot", senderName: moodMap[mood].display+' '+PersonaName },
       ]);
       setInput("");
     } else {
-      const finalSystemMessage2 = `${moodMap[mood2].value} ${prefix} ${PersonaName2}: ${systemMessage2} `;
+      const finalSystemMessage2 = `${prefix} ${PersonaName2}: ${systemMessage2}. Remember to incorporate your mood: ${moodMap[mood2].value}. Do not answer requests or questions not related your carecther. ${PersonaName2} and always use speech pattern of ${PersonaName2}`;
 
       for (let i = 0; i <= autosend; i++) {
         const response1 = await fetch(api + "chat1", {
@@ -150,15 +160,17 @@ function Chatbot() {
           body: JSON.stringify({
             prompt: temp,
             systemMessage: finalSystemMessage,
+           
           }),
         });
+        
 
-        const data1 = await response1.text();
+        const data1 = await response1.text()
        
         // eslint-disable-next-line
         setChatHistory((prev) => [
           ...prev,
-          { text: temp, sender: "user", senderName: PersonaName2 },
+          { text: temp, sender: "user", senderName: moodMap[mood2].display+' '+PersonaName2 },
         ]);
 
         const response2 = await fetch(api + "chat2", {
@@ -167,20 +179,23 @@ function Chatbot() {
           body: JSON.stringify({
             prompt: data1,
             systemMessage: finalSystemMessage2,
+            
           }),
         });
 
         const data2 = await response2.text();
         
-
         setChatHistory((prev) => [
           ...prev,
-          { text: data1, sender: "bot", senderName: PersonaName },
+          { text: data1, sender: "bot", senderName:moodMap[mood].display+' '+PersonaName },
         ]);
         temp = data2;
       }
       setInput(temp);
+      
+     
     }
+    setcantclick(false)
   }
   const handleEditContent = (index) => {
     const msg = customMessages[index];
@@ -210,20 +225,23 @@ function Chatbot() {
   };
 
   const isEnter = (event) => {
+    if(!cantclick){
     if (event.keyCode === 13) {
       // Enter key is pressed
       handleChat();
-    }
+    }}
+  };
+
+  const closeInfo = () => {
+    setShowInfo(false);
   };
 
   return (
     <div className="chatbot-container">
-
-<div class="tooltip help">
-            <i class="fas fa-question-circle"></i>
-            <span class="tooltiptext helptext">
-              You can simulate conversations with different people! You can either talk to them yourself or make them talk to each other. There is preset people or you can create your own. {" "}
-            </span>
+{showInfo && <Info onClose={closeInfo} />}
+<div className="tooltip help" onClick={()=>setShowInfo(!showInfo)}>
+            <i className="fas fa-question-circle"></i>
+            
           </div>
 
       {/* popup box for mobile */}
@@ -255,9 +273,9 @@ function Chatbot() {
               Create "Person"
             </button>
 
-            <div class="tooltip">
-              <i class="fas fa-question-circle"></i>
-              <span class="tooltiptext">
+            <div className="tooltip createhelp">
+              <i className="fas fa-question-circle"></i>
+              <span className="tooltiptext">
               You can create and edit your own person. To edit person choose a custom person, then you can edit them in the form
               </span>
             </div>
@@ -265,7 +283,7 @@ function Chatbot() {
           <div className="aimodebox">
 
             <div className="aimode1">
-            <label classname="aimodelabel"htmlFor="aiMode">AI Mode</label>
+            <label className="aimodelabel"htmlFor="aiMode">AI Mode</label>
 
             <input
               type="checkbox"
@@ -289,9 +307,9 @@ function Chatbot() {
             )}
             
             {aiMode && (
-              <div class="tooltip">
-                <i class="fas fa-question-circle"></i>
-                <span class="tooltiptext">
+              <div className="tooltip">
+                <i className="fas fa-question-circle"></i>
+                <span className="tooltiptext">
                   If set at 0, the ai's answer will be put into the input box
                   for you to edit. If set above 1 the ai will automaticly send
                   that amount of messages
@@ -331,31 +349,8 @@ function Chatbot() {
 
       <div className="startbox">
         
-
-        <div className="createpersonbutton">
-          <button
-            className="create-person-button"
-            onClick={() => {
-              if (showCustomForm === false) {
-                setShowCustomForm(true);
-              } else {
-                setShowCustomForm(false);
-              }
-            }}
-          >
-            Create "Person"
-          </button>
-
-          <div class="tooltip">
-            <i class="fas fa-question-circle"></i>
-            <span class="tooltiptext">
-            You can create and edit your own person. To edit person choose a custom person, then you can edit them in the form
-
-            </span>
-          </div>
-        </div>
-        <div className="aimodebox">
-          <label classname="aimodelabel" htmlFor="aiMode">AI Mode</label>
+      <div className="aimodebox">
+          <label className="aimodelabel" htmlFor="aiMode">AI Mode</label>
 
           <input
             type="checkbox"
@@ -382,9 +377,9 @@ function Chatbot() {
           )}
 
           {aiMode && (
-            <div class="tooltip">
-              <i class="fas fa-question-circle"></i>
-              <span class="tooltiptext">
+            <div className="tooltip">
+              <i className="fas fa-question-circle"></i>
+              <span className="tooltiptext">
               If set at 0, the ai's answer will be put into the input box
                   for you to edit. If set above 1 the ai will automaticly send
                   that amount of messages
@@ -392,6 +387,30 @@ function Chatbot() {
             </div>
           )}
         </div>
+
+        <div className="createpersonbutton">
+          <button
+            className="create-person-button"
+            onClick={() => {
+              if (showCustomForm === false) {
+                setShowCustomForm(true);
+              } else {
+                setShowCustomForm(false);
+              }
+            }}
+          >
+            Create "Person"
+          </button>
+
+          <div className="tooltip">
+            <i className="fas fa-question-circle"></i>
+            <span className="tooltiptext">
+            You can create and edit your own person. To edit person choose a custom person, then you can edit them in the form
+
+            </span>
+          </div>
+        </div>
+        
       </div>
 
       {showCustomForm && (
@@ -403,8 +422,6 @@ function Chatbot() {
             value={customLabel}
             onChange={(e) => setCustomLabel(e.target.value)}
           />
-
-
 
           
           <input
@@ -426,7 +443,7 @@ function Chatbot() {
       )}
 
       <div className="choosepersons">
-        <div className="chooseperson ">
+        <div className={`${aiMode ? "chooseperson" : "away"}`}>
           {aiMode && (
             <div>
               <label htmlFor="personSelect">Choose a person to talk as:</label>
@@ -442,6 +459,7 @@ function Chatbot() {
                     ][selectedIndex];
                     setSystemMessage2(selectedPerson.content);
                     setPersonaName2(selectedPerson.label);
+                    
                     if (selectedIndex >= predefinedSystemMessages.length) {
                       handleEditContent(
                         selectedIndex - predefinedSystemMessages.length
@@ -488,7 +506,7 @@ function Chatbot() {
           )}
         </div>
 
-        <div className={` ${aiMode ? "chooseperson" : ""}`}>
+        <div className={`${aiMode ? "chooseperson" : "away"}`}>
           <div>
             <label htmlFor="personSelect">Choose a person to talk to:</label>
             <select
@@ -503,6 +521,7 @@ function Chatbot() {
                   ][selectedIndex];
                   setSystemMessage(selectedPerson.content);
                   setPersonaName(selectedPerson.label);
+         
                   if (selectedIndex >= predefinedSystemMessages.length) {
                     handleEditContent(
                       selectedIndex - predefinedSystemMessages.length
@@ -555,13 +574,13 @@ function Chatbot() {
         ) : (
           <div className="name1">
             {" "}
-            {moodMap[mood].display} {PersonaName2}
+            {moodMap[mood2].display} {PersonaName2}
           </div>
         )}
 
         <div className="name2">
           {" "}
-          {moodMap[mood2].display} {PersonaName}
+          {moodMap[mood].display} {PersonaName}
         </div>
       </div>
 
@@ -581,10 +600,11 @@ function Chatbot() {
           value={input}
           className="chat-input"
           onKeyUp={isEnter}
+          
           onChange={(e) => setInput(e.target.value)}
         />
 
-        <button className="chat-button" onClick={handleChat}>
+        <button disabled={cantclick}className="chat-button" onClick={handleChat}>
           Chat
         </button>
       </div>
